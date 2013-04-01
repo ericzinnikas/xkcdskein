@@ -31,7 +31,7 @@ module XkcdSkein
     skein = SkeinR::Hash1024.new(1024)
 
     skein.update_str(str)
-    SkeinR::bytes_to_hex(skein.final).downcase
+    SkeinR::bytes_to_hex(skein.final)
   end
 
   def self.run_once n = nil
