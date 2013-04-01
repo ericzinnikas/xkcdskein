@@ -30,6 +30,6 @@ Thank you to www.coderslagoon.com for the SkeinR library for Skein hashing in Ru
 Also, thank you to Brian Kernighan for the bit counting algorithm!
 
 ### Contributors
-* Jordan Goldstein (@mrjordangoldstein)
-* Sam Rose (@samwho)
-* Scott Block (@scottrblock)
+* Jordan Goldstein
+* Sam Rose
+* Scott Block
