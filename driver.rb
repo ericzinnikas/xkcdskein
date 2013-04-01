@@ -4,6 +4,13 @@ $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 require "SkeinR"
 
 def main
+  puts
+  puts "*******XKCD Skein Generator for UMD*******"
+  puts "If the lowest number of wrong bits is lower than umd.edu's current record at http://almamater.xkcd.com/best.csv"
+  puts "Then you, the user, should go submit the input string, at http://almamater.xkcd.com/?edu=umd.edu"
+  puts "******************************************"
+  puts
+   
   range = [*'0'..'9', *'a'..'z', *'A'..'Z']
   overall = 500
   best_data = nil
@@ -28,8 +35,8 @@ def main
     if lowest < overall
       best_data = n
       overall = lowest
-      puts "Input String: #{n}"
-      puts "Lowest Achieved Number of Wrong Bits: #{lowest}\n"
+      puts "Input string: #{n}"
+      puts "Lowest number of wrong bits: #{lowest}\n\n"
     end
   end
 end
