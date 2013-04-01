@@ -6,7 +6,7 @@ require "SkeinR"
 def main
   puts
   puts "*******XKCD Skein Generator for UMD*******"
-  puts "If the lowest number of wrong bits is lower than umd.edu's current record at http://almamater.xkcd.com/best.csv"
+  puts "If the lowest number of wrong bits is lower than umd's current record at http://almamater.xkcd.com/best.csv"
   puts "Then you, the user, should go submit the input string, at http://almamater.xkcd.com/?edu=umd.edu"
   puts "******************************************"
   puts

@@ -3,7 +3,7 @@ Generates random strings, then runs them through a Skein 1024 1024 hash, and tes
 
 ## Instructions
 Pull it, then run `ruby driver.rb`
-If "lowest" is lower than umd.edu's current record at http://almamater.xkcd.com/best.csv, then submit the Input!
+If "lowest" is lower than umd's current record at http://almamater.xkcd.com/best.csv, then submit the Input!
 
 ## Bugs
 It will occasionally be off by a bit or two. Currently debugging.
