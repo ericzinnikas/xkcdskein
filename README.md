@@ -10,6 +10,13 @@ bin/main
 
 If the lowest number of wrong bits is lower than umd's current record at [almamater.xkcd.com/best.csv](http://almamater.xkcd.com/best.csv), then you should go submit the input string, at [almamater.xkcd.com/?edu=umd.edu](http://almamater.xkcd.com/?edu=umd.edu)
 
+### Setting up Rake tasks
+If you'd like to use the rake utility for running in parallel, or running tests, you'll need to setup the gems. Assuming you have bundler:
+
+```
+bundle install
+```
+
 ### Running in Parallel
 To run 4 instances in parallel for more number generation, run:
 
