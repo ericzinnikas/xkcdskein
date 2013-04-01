@@ -28,8 +28,8 @@ def main
     if lowest < overall
       best_data = n
       overall = lowest
-      puts "Hash: #{n}"
-      puts "Lowest: #{lowest}\n"
+      puts "Input String: #{n}"
+      puts "Lowest Achieved Number of Wrong Bits: #{lowest}\n"
     end
   end
 end
