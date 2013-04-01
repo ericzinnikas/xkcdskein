@@ -1,5 +1,5 @@
 # xkcdskein
-Generates random strings, then runs them through a Skein 1024 1024 hash, and tests the number of bits correct vs. Randall's current hash at [almamater.xkcd.com](almamater.xkcd.com). The comparison hash value is currently hardcoded, not scraped, so if it changes, you'll need to pull the repo again!
+Generates random strings, then runs them through a Skein 1024 1024 hash, and tests the number of bits correct vs. Randall's current hash at [almamater.xkcd.com](http://almamater.xkcd.com). The comparison hash value is currently hardcoded, not scraped, so if it changes, you'll need to pull the repo again!
 
 ## Instructions
 Clone this repo, then run 
