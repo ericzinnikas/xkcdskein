@@ -20,10 +20,17 @@ rake parallel
 Because multiple instances of the program output in parallel, the lowest output may not be the lower number of wrong bits. Check up a few results!
 
 ## Bugs
-It will occasionally be off by a bit or two. Currently debugging. Seems to only occur very, very rarely. Perhaps only for strings input strings less than 8 in length, which have been removed.
+The count of wrong bits will occasionally be off by a bit or two. Currently debugging. Seems to only occur very, very rarely. Perhaps only for strings input strings less than 8 in length, which have been removed.
 
-## Help!
-UMD students, please feel free to bugfix, increase efficiency, or whatever else, then submit a pull request!
+## Contribute
+UMD students (or anyone else), please feel free to bugfix, increase efficiency, or whatever else, then submit a pull request!
+
+## Test
+To run tests after changing code, enter:
+
+```
+rake
+```
 
 ## Credit & Thanks
 Thank you to www.coderslagoon.com for the SkeinR library for Skein hashing in Ruby!
