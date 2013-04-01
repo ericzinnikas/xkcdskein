@@ -1,5 +1,4 @@
 module SkeinR
-  
   def SkeinR::word32_to_bytes(n, b, ofs)
     b[ofs    ] =  n        & 0x0ff
     b[ofs + 1] = (n >>  8) & 0x0ff
@@ -19,17 +18,17 @@ module SkeinR
     b[ofs + 7] = (n >> 56) & 0x0ff
     return ofs + 8
   end
-  
+
   def SkeinR::words64_to_n_bytes(w, wofs, b, bofs, n)
-    for i in 0..n-1  
+    for i in 0..n-1
       b[bofs + i] = (w[wofs + (i >> 3)] >> ((i & 7) << 3)) & 0x0ff
     end
     return bofs + n
   end
-  
+
   def SkeinR::bytes_to_word64(b, bofs)
     return  (b[bofs    ] & 0x0ff)        |
-           ((b[bofs + 1] & 0x0ff) <<  8) |  
+           ((b[bofs + 1] & 0x0ff) <<  8) |
            ((b[bofs + 2] & 0x0ff) << 16) |
            ((b[bofs + 3] & 0x0ff) << 24) |
            ((b[bofs + 4] & 0x0ff) << 32) |
@@ -37,7 +36,7 @@ module SkeinR
            ((b[bofs + 6] & 0x0ff) << 48) |
            ((b[bofs + 7] & 0x0ff) << 56);
   end
-  
+
   def SkeinR::add64(x, y)
     (x + y) & 0xffff_ffff_ffff_ffff
   end
@@ -46,16 +45,16 @@ module SkeinR
     n &= 63
     ((x << n) | (x >> (64 - n))) & 0xffff_ffff_ffff_ffff
   end
-  
+
   def SkeinR::bytes_to_words64(b, bofs, w, wofs, wn)
-    for i in 1..wn  
-      w[wofs] = bytes_to_word64(b, bofs)  
+    for i in 1..wn
+      w[wofs] = bytes_to_word64(b, bofs)
       wofs += 1
       bofs += 8
     end
-    return wofs    
+    return wofs
   end
-  
+
   def SkeinR::hex_to_bytes(h)
     len = h.length
     return nil if len & 1 == 1
@@ -64,8 +63,8 @@ module SkeinR
       result[i] = h[i*2..(i*2)+1].hex
     end
     return result
-  end  
-  
+  end
+
   def SkeinR::bytes_to_hex(b, ofs = 0, len = b.length, cols = 0, sepa = '')
     hextab = %w{ 0 1 2 3 4 5 6 7 8 9 A B C D E F }
     return words_to_hex(b, ofs, len, cols, sepa) { |wi|
@@ -74,13 +73,13 @@ module SkeinR
       result << hextab[ wi       & 15]
     }
   end
-  
+
   def SkeinR::words64_to_hex(w, ofs, len, cols = 0, sepa = ' ', split = ':')
     return words_to_hex(w, ofs, len, cols, sepa) { |wi|
       sprintf("%08X%s%08X", wi >> 32, split, wi & 0x0ffff_ffff)
     }
   end
-  
+
   def SkeinR::words_to_hex(w, ofs, len, cols = 0, sepa = ' ')
     result = ""
     s = ""
@@ -88,12 +87,12 @@ module SkeinR
       wi = w[ofs + i]
       lf = 0 < cols && 0 == (i + 1) % cols && len - 1 > i
       result <<= sprintf("%s%s", s, yield(wi))
-      if lf 
+      if lf
         s = ""
-      else 
-        s = sepa 
+      else
+        s = sepa
       end
-      result <<= "\n" if lf 
+      result <<= "\n" if lf
     end
     return result
   end
@@ -107,9 +106,9 @@ module SkeinR
       printf(fmt + "\n", *args)
     end
   end
-  
+
   ############################################################################
-  
+
   MODIFIER_WORDS = 2
   ID_STRING_LE   = 0x33414853
   VERSION        = 1
@@ -121,8 +120,8 @@ module SkeinR
   ############################################################################
 
   class Hash
-    attr_accessor :hashbitlen 
-    attr_accessor :cnt 
+    attr_accessor :hashbitlen
+    attr_accessor :cnt
     attr_accessor :X
     attr_accessor :b
     attr_accessor :T
@@ -136,10 +135,10 @@ module SkeinR
     def inject_key(r, wcnt, x, ks, ts)
       for i in 0..wcnt-1
         x[i] = SkeinR::add64(x[i], ks[(r + i) % (wcnt + 1)])
-      end                                
-      x[wcnt - 3] = SkeinR::add64(x[wcnt - 3], ts[(r + 0) % 3])                                  
-      x[wcnt - 2] = SkeinR::add64(x[wcnt - 2], ts[(r + 1) % 3])                                   
-      x[wcnt - 1] = SkeinR::add64(x[wcnt - 1], r)                                   
+      end
+      x[wcnt - 3] = SkeinR::add64(x[wcnt - 3], ts[(r + 0) % 3])
+      x[wcnt - 2] = SkeinR::add64(x[wcnt - 2], ts[(r + 1) % 3])
+      x[wcnt - 1] = SkeinR::add64(x[wcnt - 1], r)
     end
     def update_str(obj)
       obj.to_s.each_byte do |byte|
@@ -148,9 +147,9 @@ module SkeinR
       self
     end
   end
-  
+
   ############################################################################
-  
+
   class Hash256 < Hash
     BLOCK_BYTES  = 32
     STATE_WORDS  = 4
@@ -173,9 +172,9 @@ module SkeinR
     end
     def update(byte)
       if (@cnt == @b.length)
-        process_block(@b, 0, @b.length) 
+        process_block(@b, 0, @b.length)
         @cnt = 0
-      end    
+      end
       @b[@cnt] = byte
       @cnt += 1
       self
@@ -183,11 +182,11 @@ module SkeinR
     def final
       @T[1] |= BIT_FINAL
       for i in @cnt..@b.length-1
-        @b[i] = 0 
+        @b[i] = 0
       end
-      process_block(@b, 0, @cnt) 
+      process_block(@b, 0, @cnt)
       byteCnt = (@hashbitlen + 7) >> 3;
-      result = Array.new(byteCnt, 0) 
+      result = Array.new(byteCnt, 0)
       x = @X.dup
       @b.fill(0)
       i = 0
@@ -196,11 +195,11 @@ module SkeinR
         @T[0] = 0
         @T[1] = BIT_FIRST | (63 << (120 - 64)) | BIT_FINAL
         @cnt = 0
-        process_block(@b, 0, 8) 
+        process_block(@b, 0, 8)
         n = byteCnt - i* BLOCK_BYTES;
         n = BLOCK_BYTES if n >= BLOCK_BYTES
         SkeinR::words64_to_n_bytes(@X, 0, result, i * BLOCK_BYTES, n)
-        @X = x.dup 
+        @X = x.dup
         i += 1
       end
       return result
@@ -232,21 +231,21 @@ module SkeinR
       #SkeinR::dbgf("input block:\n%s", SkeinR::bytes_to_hex(blk, ofs, wcnt*8, 16, ' '))
       SkeinR::bytes_to_words64(blk, ofs, w, 0, wcnt)
       for i in 0..wcnt-1
-        x[i] = SkeinR::add64(w[i], ks[i]) 
+        x[i] = SkeinR::add64(w[i], ks[i])
       end
-      x[wcnt - 3] = SkeinR::add64(x[wcnt - 3], ts[0]) 
+      x[wcnt - 3] = SkeinR::add64(x[wcnt - 3], ts[0])
       x[wcnt - 2] = SkeinR::add64(x[wcnt - 2], ts[1])
       #SkeinR::dbgf("after initkinj: %s", SkeinR::words64_to_hex(x, 0, x.length, x.length))
       for r in 1..ROUNDS_TOTAL/8
         x[0] = SkeinR::add64(x[0], x[1]); x[1] = SkeinR::rotl64(x[1], R_256_0_0); x[1] ^= x[0]
-        x[2] = SkeinR::add64(x[2], x[3]); x[3] = SkeinR::rotl64(x[3], R_256_0_1); x[3] ^= x[2]; #SkeinR::dbgf("after round %2d: %s", r*8-7, SkeinR::words64_to_hex(x, 0, x.length, x.length)) 
+        x[2] = SkeinR::add64(x[2], x[3]); x[3] = SkeinR::rotl64(x[3], R_256_0_1); x[3] ^= x[2]; #SkeinR::dbgf("after round %2d: %s", r*8-7, SkeinR::words64_to_hex(x, 0, x.length, x.length))
         x[0] = SkeinR::add64(x[0], x[3]); x[3] = SkeinR::rotl64(x[3], R_256_1_0); x[3] ^= x[0]
         x[2] = SkeinR::add64(x[2], x[1]); x[1] = SkeinR::rotl64(x[1], R_256_1_1); x[1] ^= x[2]; #SkeinR::dbgf("after round %2d: %s", r*8-6, SkeinR::words64_to_hex(x, 0, x.length, x.length))
         x[0] = SkeinR::add64(x[0], x[1]); x[1] = SkeinR::rotl64(x[1], R_256_2_0); x[1] ^= x[0]
         x[2] = SkeinR::add64(x[2], x[3]); x[3] = SkeinR::rotl64(x[3], R_256_2_1); x[3] ^= x[2]; #SkeinR::dbgf("after round %2d: %s", r*8-5, SkeinR::words64_to_hex(x, 0, x.length, x.length))
         x[0] = SkeinR::add64(x[0], x[3]); x[3] = SkeinR::rotl64(x[3], R_256_3_0); x[3] ^= x[0]
         x[2] = SkeinR::add64(x[2], x[1]); x[1] = SkeinR::rotl64(x[1], R_256_3_1); x[1] ^= x[2]; #SkeinR::dbgf("after round %2d: %s", r*8-4, SkeinR::words64_to_hex(x, 0, x.length, x.length))
-        inject_key(2 * r - 1, wcnt, x, ks, ts)                                                ; #SkeinR::dbgf("after keyinj#1: %s" ,        SkeinR::words64_to_hex(x, 0, x.length, x.length)) 
+        inject_key(2 * r - 1, wcnt, x, ks, ts)                                                ; #SkeinR::dbgf("after keyinj#1: %s" ,        SkeinR::words64_to_hex(x, 0, x.length, x.length))
         x[0] = SkeinR::add64(x[0], x[1]); x[1] = SkeinR::rotl64(x[1], R_256_4_0); x[1] ^= x[0]
         x[2] = SkeinR::add64(x[2], x[3]); x[3] = SkeinR::rotl64(x[3], R_256_4_1); x[3] ^= x[2]; #SkeinR::dbgf("after round %2d: %s", r*8-3, SkeinR::words64_to_hex(x, 0, x.length, x.length))
         x[0] = SkeinR::add64(x[0], x[3]); x[3] = SkeinR::rotl64(x[3], R_256_5_0); x[3] ^= x[0]
@@ -255,15 +254,15 @@ module SkeinR
         x[2] = SkeinR::add64(x[2], x[3]); x[3] = SkeinR::rotl64(x[3], R_256_6_1); x[3] ^= x[2]; #SkeinR::dbgf("after round %2d: %s", r*8-1, SkeinR::words64_to_hex(x, 0, x.length, x.length))
         x[0] = SkeinR::add64(x[0], x[3]); x[3] = SkeinR::rotl64(x[3], R_256_7_0); x[3] ^= x[0]
         x[2] = SkeinR::add64(x[2], x[1]); x[1] = SkeinR::rotl64(x[1], R_256_7_1); x[1] ^= x[2]; #SkeinR::dbgf("after round %2d: %s", r*8  , SkeinR::words64_to_hex(x, 0, x.length, x.length))
-        inject_key(2 * r, wcnt, x, ks, ts)                                                    ; #SkeinR::dbgf("after keyinj#2: %s" ,        SkeinR::words64_to_hex(x, 0, x.length, x.length)) 
+        inject_key(2 * r, wcnt, x, ks, ts)                                                    ; #SkeinR::dbgf("after keyinj#2: %s" ,        SkeinR::words64_to_hex(x, 0, x.length, x.length))
       end
       for i in 0..wcnt-1
         @X[i] = x[i] ^ w[i]
-      end                                                                                     ; #SkeinR::dbgf("after ptxtfdfw: %s", SkeinR::words64_to_hex(@X, 0, @X.length, @X.length)) 
+      end                                                                                     ; #SkeinR::dbgf("after ptxtfdfw: %s", SkeinR::words64_to_hex(@X, 0, @X.length, @X.length))
       @T[1] &= ~BIT_FIRST
     end
   end
-  
+
   #############################################################################
 
   class Hash512 < Hash
@@ -288,9 +287,9 @@ module SkeinR
     end
     def update(byte)
       if (@cnt == @b.length)
-        process_block(@b, 0, @b.length) 
+        process_block(@b, 0, @b.length)
         @cnt = 0
-      end    
+      end
       @b[@cnt] = byte
       @cnt += 1
       self
@@ -298,11 +297,11 @@ module SkeinR
     def final
       @T[1] |= BIT_FINAL
       for i in @cnt..@b.length-1
-        @b[i] = 0 
+        @b[i] = 0
       end
-      process_block(@b, 0, @cnt) 
+      process_block(@b, 0, @cnt)
       byteCnt = (@hashbitlen + 7) >> 3;
-      result = Array.new(byteCnt, 0) 
+      result = Array.new(byteCnt, 0)
       x = @X.dup
       @b.fill(0)
       i = 0
@@ -311,11 +310,11 @@ module SkeinR
         @T[0] = 0
         @T[1] = BIT_FIRST | (63 << (120 - 64)) | BIT_FINAL
         @cnt = 0
-        process_block(@b, 0, 8) 
+        process_block(@b, 0, 8)
         n = byteCnt - i* BLOCK_BYTES;
         n = BLOCK_BYTES if n >= BLOCK_BYTES
         SkeinR::words64_to_n_bytes(@X, 0, result, i * BLOCK_BYTES, n)
-        @X = x.dup 
+        @X = x.dup
         i += 1
       end
       return result
@@ -347,16 +346,16 @@ module SkeinR
       #SkeinR::dbgf("input block:\n%s", SkeinR::bytes_to_hex(blk, ofs, wcnt*8, 16, ' '))
       SkeinR::bytes_to_words64(blk, ofs, w, 0, wcnt)
       for i in 0..wcnt-1
-        x[i] = SkeinR::add64(w[i], ks[i]) 
+        x[i] = SkeinR::add64(w[i], ks[i])
       end
-      x[wcnt - 3] = SkeinR::add64(x[wcnt - 3], ts[0]) 
+      x[wcnt - 3] = SkeinR::add64(x[wcnt - 3], ts[0])
       x[wcnt - 2] = SkeinR::add64(x[wcnt - 2], ts[1])
       SkeinR::dbgf("after initkinj: %s", SkeinR::words64_to_hex(x, 0, x.length, x.length))
       for r in 1..ROUNDS_TOTAL/8
         x[0] = SkeinR::add64(x[0], x[1]); x[1] = SkeinR::rotl64(x[1], R_512_0_0); x[1] ^= x[0]
         x[2] = SkeinR::add64(x[2], x[3]); x[3] = SkeinR::rotl64(x[3], R_512_0_1); x[3] ^= x[2]
         x[4] = SkeinR::add64(x[4], x[5]); x[5] = SkeinR::rotl64(x[5], R_512_0_2); x[5] ^= x[4]
-        x[6] = SkeinR::add64(x[6], x[7]); x[7] = SkeinR::rotl64(x[7], R_512_0_3); x[7] ^= x[6]; #SkeinR::dbgf("after round %2d: %s", r*8-7, SkeinR::words64_to_hex(x, 0, x.length, x.length)) 
+        x[6] = SkeinR::add64(x[6], x[7]); x[7] = SkeinR::rotl64(x[7], R_512_0_3); x[7] ^= x[6]; #SkeinR::dbgf("after round %2d: %s", r*8-7, SkeinR::words64_to_hex(x, 0, x.length, x.length))
         x[2] = SkeinR::add64(x[2], x[1]); x[1] = SkeinR::rotl64(x[1], R_512_1_0); x[1] ^= x[2]
         x[4] = SkeinR::add64(x[4], x[7]); x[7] = SkeinR::rotl64(x[7], R_512_1_1); x[7] ^= x[4]
         x[6] = SkeinR::add64(x[6], x[5]); x[5] = SkeinR::rotl64(x[5], R_512_1_2); x[5] ^= x[6]
@@ -369,7 +368,7 @@ module SkeinR
         x[0] = SkeinR::add64(x[0], x[7]); x[7] = SkeinR::rotl64(x[7], R_512_3_1); x[7] ^= x[0]
         x[2] = SkeinR::add64(x[2], x[5]); x[5] = SkeinR::rotl64(x[5], R_512_3_2); x[5] ^= x[2]
         x[4] = SkeinR::add64(x[4], x[3]); x[3] = SkeinR::rotl64(x[3], R_512_3_3); x[3] ^= x[4]; #SkeinR::dbgf("after round %2d: %s", r*8-4, SkeinR::words64_to_hex(x, 0, x.length, x.length))
-        inject_key(2 * r - 1, wcnt, x, ks, ts)                                                ; #SkeinR::dbgf("after keyinj#1: %s" ,        SkeinR::words64_to_hex(x, 0, x.length, x.length)) 
+        inject_key(2 * r - 1, wcnt, x, ks, ts)                                                ; #SkeinR::dbgf("after keyinj#1: %s" ,        SkeinR::words64_to_hex(x, 0, x.length, x.length))
         x[0] = SkeinR::add64(x[0], x[1]); x[1] = SkeinR::rotl64(x[1], R_512_4_0); x[1] ^= x[0]
         x[2] = SkeinR::add64(x[2], x[3]); x[3] = SkeinR::rotl64(x[3], R_512_4_1); x[3] ^= x[2]
         x[4] = SkeinR::add64(x[4], x[5]); x[5] = SkeinR::rotl64(x[5], R_512_4_2); x[5] ^= x[4]
@@ -386,17 +385,17 @@ module SkeinR
         x[0] = SkeinR::add64(x[0], x[7]); x[7] = SkeinR::rotl64(x[7], R_512_7_1); x[7] ^= x[0]
         x[2] = SkeinR::add64(x[2], x[5]); x[5] = SkeinR::rotl64(x[5], R_512_7_2); x[5] ^= x[2]
         x[4] = SkeinR::add64(x[4], x[3]); x[3] = SkeinR::rotl64(x[3], R_512_7_3); x[3] ^= x[4]; #SkeinR::dbgf("after round %2d: %s", r*8  , SkeinR::words64_to_hex(x, 0, x.length, x.length))
-        inject_key(2 * r, wcnt, x, ks, ts)                                                    ; #SkeinR::dbgf("after keyinj#2: %s" ,        SkeinR::words64_to_hex(x, 0, x.length, x.length)) 
+        inject_key(2 * r, wcnt, x, ks, ts)                                                    ; #SkeinR::dbgf("after keyinj#2: %s" ,        SkeinR::words64_to_hex(x, 0, x.length, x.length))
       end
       for i in 0..wcnt-1
         @X[i] = x[i] ^ w[i]
-      end                                                                                     ; #SkeinR::dbgf("after ptxtfdfw: %s", SkeinR::words64_to_hex(@X, 0, @X.length, @X.length)) 
+      end                                                                                     ; #SkeinR::dbgf("after ptxtfdfw: %s", SkeinR::words64_to_hex(@X, 0, @X.length, @X.length))
       @T[1] &= ~BIT_FIRST
     end
   end
-  
+
 ##############################################################################
-  
+
   class Hash1024 < Hash
     BLOCK_BYTES  = 128
     STATE_WORDS  = 16
@@ -419,20 +418,20 @@ module SkeinR
     end
     def update(byte)
       if (@cnt == @b.length)
-        process_block(@b, 0, @b.length) 
+        process_block(@b, 0, @b.length)
         @cnt = 0
-      end    
+      end
       @b[@cnt] = byte
       @cnt += 1
     end
     def final
       @T[1] |= BIT_FINAL
       for i in @cnt..@b.length-1
-        @b[i] = 0 
+        @b[i] = 0
       end
-      process_block(@b, 0, @cnt) 
+      process_block(@b, 0, @cnt)
       byteCnt = (@hashbitlen + 7) >> 3;
-      result = Array.new(byteCnt, 0) 
+      result = Array.new(byteCnt, 0)
       x = @X.dup
       @b.fill(0)
       i = 0
@@ -441,11 +440,11 @@ module SkeinR
         @T[0] = 0
         @T[1] = BIT_FIRST | (63 << (120 - 64)) | BIT_FINAL
         @cnt = 0
-        process_block(@b, 0, 8) 
+        process_block(@b, 0, 8)
         n = byteCnt - i* BLOCK_BYTES;
         n = BLOCK_BYTES if n >= BLOCK_BYTES
         SkeinR::words64_to_n_bytes(@X, 0, result, i * BLOCK_BYTES, n)
-        @X = x.dup 
+        @X = x.dup
         i += 1
       end
       return result
@@ -478,9 +477,9 @@ module SkeinR
       #SkeinR::dbgf("input block:\n%s", SkeinR::bytes_to_hex(blk, ofs, wcnt*8, 16, ' '))
       SkeinR::bytes_to_words64(blk, ofs, w, 0, wcnt)
       for i in 0..wcnt-1
-        x[i] = SkeinR::add64(w[i], ks[i]) 
+        x[i] = SkeinR::add64(w[i], ks[i])
       end
-      x[wcnt - 3] = SkeinR::add64(x[wcnt - 3], ts[0]) 
+      x[wcnt - 3] = SkeinR::add64(x[wcnt - 3], ts[0])
       x[wcnt - 2] = SkeinR::add64(x[wcnt - 2], ts[1])
       #SkeinR::dbgf("after initkinj: %s", SkeinR::words64_to_hex(x, 0, x.length, x.length))
       for r in 1..ROUNDS_TOTAL/8
@@ -492,7 +491,7 @@ module SkeinR
         x[10] = SkeinR::add64(x[10], x[11]); x[11] = SkeinR::rotl64(x[11], R1024_0_5); x[11] ^= x[10]
         x[12] = SkeinR::add64(x[12], x[13]); x[13] = SkeinR::rotl64(x[13], R1024_0_6); x[13] ^= x[12]
         x[14] = SkeinR::add64(x[14], x[15]); x[15] = SkeinR::rotl64(x[15], R1024_0_7); x[15] ^= x[14]; #SkeinR::dbgf("after round %2d: %s", r*8-7, SkeinR::words64_to_hex(x, 0, x.length, x.length))
-        
+
         x[ 0] = SkeinR::add64(x[ 0], x[ 9]); x[ 9] = SkeinR::rotl64(x[ 9], R1024_1_0); x[ 9] ^= x[ 0]
         x[ 2] = SkeinR::add64(x[ 2], x[13]); x[13] = SkeinR::rotl64(x[13], R1024_1_1); x[13] ^= x[ 2]
         x[ 6] = SkeinR::add64(x[ 6], x[11]); x[11] = SkeinR::rotl64(x[11], R1024_1_2); x[11] ^= x[ 6]
@@ -501,7 +500,7 @@ module SkeinR
         x[12] = SkeinR::add64(x[12], x[ 3]); x[ 3] = SkeinR::rotl64(x[ 3], R1024_1_5); x[ 3] ^= x[12]
         x[14] = SkeinR::add64(x[14], x[ 5]); x[ 5] = SkeinR::rotl64(x[ 5], R1024_1_6); x[ 5] ^= x[14]
         x[ 8] = SkeinR::add64(x[ 8], x[ 1]); x[ 1] = SkeinR::rotl64(x[ 1], R1024_1_7); x[ 1] ^= x[ 8]; #SkeinR::dbgf("after round %2d: %s", r*8-6, SkeinR::words64_to_hex(x, 0, x.length, x.length))
-        
+
         x[ 0] = SkeinR::add64(x[ 0], x[ 7]); x[ 7] = SkeinR::rotl64(x[ 7], R1024_2_0); x[ 7] ^= x[ 0]
         x[ 2] = SkeinR::add64(x[ 2], x[ 5]); x[ 5] = SkeinR::rotl64(x[ 5], R1024_2_1); x[ 5] ^= x[ 2]
         x[ 4] = SkeinR::add64(x[ 4], x[ 3]); x[ 3] = SkeinR::rotl64(x[ 3], R1024_2_2); x[ 3] ^= x[ 4]
@@ -510,7 +509,7 @@ module SkeinR
         x[14] = SkeinR::add64(x[14], x[13]); x[13] = SkeinR::rotl64(x[13], R1024_2_5); x[13] ^= x[14]
         x[ 8] = SkeinR::add64(x[ 8], x[11]); x[11] = SkeinR::rotl64(x[11], R1024_2_6); x[11] ^= x[ 8]
         x[10] = SkeinR::add64(x[10], x[ 9]); x[ 9] = SkeinR::rotl64(x[ 9], R1024_2_7); x[ 9] ^= x[10]; #SkeinR::dbgf("after round %2d: %s", r*8-5, SkeinR::words64_to_hex(x, 0, x.length, x.length))
-        
+
         x[ 0] = SkeinR::add64(x[ 0], x[15]); x[15] = SkeinR::rotl64(x[15], R1024_3_0); x[15] ^= x[ 0]
         x[ 2] = SkeinR::add64(x[ 2], x[11]); x[11] = SkeinR::rotl64(x[11], R1024_3_1); x[11] ^= x[ 2]
         x[ 6] = SkeinR::add64(x[ 6], x[13]); x[13] = SkeinR::rotl64(x[13], R1024_3_2); x[13] ^= x[ 6]
@@ -519,8 +518,8 @@ module SkeinR
         x[ 8] = SkeinR::add64(x[ 8], x[ 5]); x[ 5] = SkeinR::rotl64(x[ 5], R1024_3_5); x[ 5] ^= x[ 8]
         x[10] = SkeinR::add64(x[10], x[ 3]); x[ 3] = SkeinR::rotl64(x[ 3], R1024_3_6); x[ 3] ^= x[10]
         x[12] = SkeinR::add64(x[12], x[ 7]); x[ 7] = SkeinR::rotl64(x[ 7], R1024_3_7); x[ 7] ^= x[12]; #SkeinR::dbgf("after round %2d: %s", r*8-4, SkeinR::words64_to_hex(x, 0, x.length, x.length))
-        inject_key(2 * r - 1, wcnt, x, ks, ts)                                                       ; #SkeinR::dbgf("after keyinj#1: %s" ,        SkeinR::words64_to_hex(x, 0, x.length, x.length)) 
-        
+        inject_key(2 * r - 1, wcnt, x, ks, ts)                                                       ; #SkeinR::dbgf("after keyinj#1: %s" ,        SkeinR::words64_to_hex(x, 0, x.length, x.length))
+
         x[ 0] = SkeinR::add64(x[ 0], x[ 1]); x[ 1] = SkeinR::rotl64(x[ 1], R1024_4_0); x[ 1] ^= x[ 0]
         x[ 2] = SkeinR::add64(x[ 2], x[ 3]); x[ 3] = SkeinR::rotl64(x[ 3], R1024_4_1); x[ 3] ^= x[ 2]
         x[ 4] = SkeinR::add64(x[ 4], x[ 5]); x[ 5] = SkeinR::rotl64(x[ 5], R1024_4_2); x[ 5] ^= x[ 4]
@@ -529,7 +528,7 @@ module SkeinR
         x[10] = SkeinR::add64(x[10], x[11]); x[11] = SkeinR::rotl64(x[11], R1024_4_5); x[11] ^= x[10]
         x[12] = SkeinR::add64(x[12], x[13]); x[13] = SkeinR::rotl64(x[13], R1024_4_6); x[13] ^= x[12]
         x[14] = SkeinR::add64(x[14], x[15]); x[15] = SkeinR::rotl64(x[15], R1024_4_7); x[15] ^= x[14]; #SkeinR::dbgf("after round %2d: %s", r*8-3, SkeinR::words64_to_hex(x, 0, x.length, x.length))
-        
+
         x[ 0] = SkeinR::add64(x[ 0], x[ 9]); x[ 9] = SkeinR::rotl64(x[ 9], R1024_5_0); x[ 9] ^= x[ 0]
         x[ 2] = SkeinR::add64(x[ 2], x[13]); x[13] = SkeinR::rotl64(x[13], R1024_5_1); x[13] ^= x[ 2]
         x[ 6] = SkeinR::add64(x[ 6], x[11]); x[11] = SkeinR::rotl64(x[11], R1024_5_2); x[11] ^= x[ 6]
@@ -538,7 +537,7 @@ module SkeinR
         x[12] = SkeinR::add64(x[12], x[ 3]); x[ 3] = SkeinR::rotl64(x[ 3], R1024_5_5); x[ 3] ^= x[12]
         x[14] = SkeinR::add64(x[14], x[ 5]); x[ 5] = SkeinR::rotl64(x[ 5], R1024_5_6); x[ 5] ^= x[14]
         x[ 8] = SkeinR::add64(x[ 8], x[ 1]); x[ 1] = SkeinR::rotl64(x[ 1], R1024_5_7); x[ 1] ^= x[ 8]; #SkeinR::dbgf("after round %2d: %s", r*8-2, SkeinR::words64_to_hex(x, 0, x.length, x.length))
-        
+
         x[ 0] = SkeinR::add64(x[ 0], x[ 7]); x[ 7] = SkeinR::rotl64(x[ 7], R1024_6_0); x[ 7] ^= x[ 0]
         x[ 2] = SkeinR::add64(x[ 2], x[ 5]); x[ 5] = SkeinR::rotl64(x[ 5], R1024_6_1); x[ 5] ^= x[ 2]
         x[ 4] = SkeinR::add64(x[ 4], x[ 3]); x[ 3] = SkeinR::rotl64(x[ 3], R1024_6_2); x[ 3] ^= x[ 4]
@@ -547,7 +546,7 @@ module SkeinR
         x[14] = SkeinR::add64(x[14], x[13]); x[13] = SkeinR::rotl64(x[13], R1024_6_5); x[13] ^= x[14]
         x[ 8] = SkeinR::add64(x[ 8], x[11]); x[11] = SkeinR::rotl64(x[11], R1024_6_6); x[11] ^= x[ 8]
         x[10] = SkeinR::add64(x[10], x[ 9]); x[ 9] = SkeinR::rotl64(x[ 9], R1024_6_7); x[ 9] ^= x[10]; #SkeinR::dbgf("after round %2d: %s", r*8-1, SkeinR::words64_to_hex(x, 0, x.length, x.length))
-        
+
         x[ 0] = SkeinR::add64(x[ 0], x[15]); x[15] = SkeinR::rotl64(x[15], R1024_7_0); x[15] ^= x[ 0]
         x[ 2] = SkeinR::add64(x[ 2], x[11]); x[11] = SkeinR::rotl64(x[11], R1024_7_1); x[11] ^= x[ 2]
         x[ 6] = SkeinR::add64(x[ 6], x[13]); x[13] = SkeinR::rotl64(x[13], R1024_7_2); x[13] ^= x[ 6]
@@ -556,11 +555,11 @@ module SkeinR
         x[ 8] = SkeinR::add64(x[ 8], x[ 5]); x[ 5] = SkeinR::rotl64(x[ 5], R1024_7_5); x[ 5] ^= x[ 8]
         x[10] = SkeinR::add64(x[10], x[ 3]); x[ 3] = SkeinR::rotl64(x[ 3], R1024_7_6); x[ 3] ^= x[10]
         x[12] = SkeinR::add64(x[12], x[ 7]); x[ 7] = SkeinR::rotl64(x[ 7], R1024_7_7); x[ 7] ^= x[12]; #SkeinR::dbgf("after round %2d: %s", r*8-0, SkeinR::words64_to_hex(x, 0, x.length, x.length))
-        inject_key(2 * r, wcnt, x, ks, ts)                                                           ; #SkeinR::dbgf("after keyinj#2: %s" ,        SkeinR::words64_to_hex(x, 0, x.length, x.length)) 
+        inject_key(2 * r, wcnt, x, ks, ts)                                                           ; #SkeinR::dbgf("after keyinj#2: %s" ,        SkeinR::words64_to_hex(x, 0, x.length, x.length))
       end
       for i in 0..wcnt-1
         @X[i] = x[i] ^ w[i]
-      end                                                                                            ; #SkeinR::dbgf("after ptxtfdfw: %s", SkeinR::words64_to_hex(@X, 0, @X.length, @X.length)) 
+      end                                                                                            ; #SkeinR::dbgf("after ptxtfdfw: %s", SkeinR::words64_to_hex(@X, 0, @X.length, @X.length))
       @T[1] &= ~BIT_FIRST
     end
   end
@@ -569,18 +568,17 @@ module SkeinR
 
   def SkeinR::hash_string(str, hash = SkeinR::Hash512.new)
     hash.update_str str
-    res = hash.final    
+    res = hash.final
     SkeinR::bytes_to_hex res, 0, res.length
   end
-    
+
   def SkeinR::hash_file(fname, hash = SkeinR::Hash512.new)
     File.open(fname) do |fl|
       fl.each_byte do |byte|
         hash.update byte
-      end     
+      end
     end
-    res = hash.final    
+    res = hash.final
     SkeinR::bytes_to_hex res, 0, res.length
   end
-    
 end

@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/xkcdskein'
+
+loop do
+  n, lowest = XkcdSkein.run_once
+
+  if n
+    puts "Input string: #{n}"
+    puts "Lowest number of wrong bits: #{lowest}\n\n"
+  end
+end
