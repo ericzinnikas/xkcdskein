@@ -10,3 +10,6 @@ It will occasionally be off by a bit or two. Currently debugging.
 
 ## Help!
 UMD students, please feel free to bugfix, increase efficiency, or whatever else, then submit a pull request!
+
+## Credit & Thanks
+Thank you to http://www.coderslagoon.com/ for the SkeinR library for Skein hashing in Ruby!
