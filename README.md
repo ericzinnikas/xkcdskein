@@ -5,10 +5,12 @@ Generates random strings, then runs them through a Skein 1024 1024 hash, and tes
 Clone this repo, then run 
 
 ```
-ruby driver.rb`
+rake parallel
 ```
 
 If the lowest number of wrong bits is lower than umd's current record at [almamater.xkcd.com/best.csv](http://almamater.xkcd.com/best.csv), then you should go submit the input string, at [almamater.xkcd.com/?edu=umd.edu](http://almamater.xkcd.com/?edu=umd.edu)
+
+Because multiple instances of the program output in parallel, the lowest output may not be the lower number of wrong bits. Check up a few!
 
 ## Bugs
 It will occasionally be off by a bit or two. Currently debugging. Seems to only occur very, very rarely. Perhaps only for strings input strings less than 8 in length, which have been removed.
@@ -18,3 +20,9 @@ UMD students, please feel free to bugfix, increase efficiency, or whatever else,
 
 ## Credit & Thanks
 Thank you to www.coderslagoon.com for the SkeinR library for Skein hashing in Ruby!
+Also, thank you to Brian Kernighan for the bit counting algorithm!
+
+### Contributors
+* Jordan Goldstein
+* Sam Rose
+* Scott Block
